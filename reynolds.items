@@ -1,0 +1,67 @@
+Group All
+Group gGF 			(All)
+Group gFF 			(All)
+Group Outdoor 		(All)
+Group Weather 		(All)
+Group Status 		(All)
+Group Temperature	(All)
+Group Music			(All)
+Group Evening
+Group GF_Living 					"Living Room" 			<television> 	(gGF)
+Group GF_Kitchen 					"Kitchen" 				<kitchen> 		(gGF)
+Group GF_BedFront 					"Front Bedroom" 		<bedroom> 		(gGF)
+Group GF_BedMiddle					"Middle Bedroom" 		<bedroom> 		(gGF)
+Group FF_BedMaster					"Master Bedroom" 		<bedroom> 		(gFF)
+Group FF_Hall						"Hallway" 				<stairs> 		(gFF)
+
+/* Lights */
+Dimmer Light_GF_Living_Lamp 		"Lamp" 									(GF_Living, Lights, Evening)	{ zwave="7:command=SWITCH_MULTILEVEL" }
+Dimmer Light_GF_Front_Bedroom 		"Lamp" 									(GF_BedFront, Lights)			{ zwave="2:command=SWITCH_MULTILEVEL" }
+Switch Light_GF_Kitchen_Bench 		"Bench" 								(GF_Kitchen, Lights, Evening)   { zwave="8:command=SWITCH_BINARY" }
+Switch Light_FF_BedMaster_Ceiling 	"Ceiling"								(FF_BedMaster, Lights)			{ zwave="5:command=SWITCH_BINARY" }
+Switch Light_FF_Hall_Stairs	 		"Stairs"								(FF_Hall, Lights, Evening)		{ zwave="10:command=SWITCH_BINARY" }
+Switch Light_Outdoor_Frontyard 		"Front Garden" 							(Outdoor, Lights, Evening)		{ zwave="3:command=SWITCH_MULTILEVEL" }
+Switch Light_Outdoor_Backyard 		"Back Garden"							(Outdoor, Lights, Evening)		{ zwave="4:command=SWITCH_BINARY" }
+
+/* Music */
+String SonosKitchen_track			"Kitchen: [%s]"  		<sonos5>			(Music)								{ sonos="[RINCON_5CAAFD01B2A401400:currenttrack]", autoupdate="false"}
+Switch SonosKitchen					"Sonos Music" 			<note>			(GF_Kitchen, Music)				{ sonos="[ON:RINCON_5CAAFD01B2A401400:play],[OFF:RINCON_5CAAFD01B2A401400:stop]" }
+String SonosKitchen_Radio																					{ sonos="[ON:RINCON_5CAAFD01B2A401400:radio]", autoupdate="false" } 
+Number SonosKitchen_select			"Radio Station"         <note>			
+
+Dimmer SonosKitchenVolume			"Sonos Volume"			<speakervol>	(GF_Kitchen, Music)				{ sonos="[RINCON_5CAAFD01B2A401400:volume]" }
+String SonosKitchen_PlayUri 																				{ sonos="[RINCON_5CAAFD01B2A401400:playuri]"}
+Switch SonosKitchens_Save  																					{ sonos="[ON:RINCON_5CAAFD01B2A401400:save]", autoupdate="false" } 
+Switch SonosKitchen_Restore																					{ sonos="[ON:RINCON_5CAAFD01B2A401400:restore]", autoupdate="false" } 
+
+String SonosBedroom_track			"Bedroom: [%s]"  		<sonos3>		(Music)							{ sonos="[RINCON_B8E9373208C601400:currenttrack]", autoupdate="false"}
+Switch SonosBedroom					"Sonos Music" 			<note>			(FF_BedMaster, Music)			{ sonos="[ON:RINCON_B8E9373208C601400:play],[OFF:RINCON_B8E9373208C601400:stop]" }
+Dimmer SonosBedroomVolume			"Sonos Volume"			<speakervol>	(FF_BedMaster, Music)			{ sonos="[RINCON_B8E9373208C601400:volume]" }
+
+String SonosLounge_track			"Lounge: [%s]"  		<sonosconnect>	(Music)							{ sonos="[RINCON_B8E93792274001400:currenttrack]", autoupdate="false"}
+Switch SonosLounge					"Sonos Music" 			<note>			(GF_Living, Music)				{ sonos="[ON:RINCON_B8E93792274001400:play],[OFF:RINCON_B8E93792274001400:stop]" }
+Dimmer SonosLoungeVolume			"Sonos Volume"			<speakervol>	(GF_Living, Music)				{ sonos="[RINCON_B8E93792274001400:volume]" }
+
+
+/* Buttons */
+
+
+/* Indoor Temperatures */
+Number Temperature_FF_Bed 			"Temperature [%.1f °C]"	<temperature>	(Temperature, FF_BedMaster)		{mqtt="<[mymosquitto:/Temperature/MasterBedroom:state:default]"}
+Number Humidity_FF_Bed 				"Humidity [%.1f %%]" 	<water>			(Temperature, FF_BedMaster)		{mqtt="<[mymosquitto:/Temperature/Humidity/MasterBedroom:state:default]"}
+
+/* NTP binding demo item */
+DateTime		Date				"Date [%1$tA, %1$td.%1$tm.%1$tY]"	<calendar>							{ ntp="Australia/Sydney:en_EN" }
+
+/* Locations */
+Location DemoLocation				"Bondi, Australia"
+
+/* Weather */
+Group Weather_Chart													(Weather)
+Number Weather_Temperature 		"Outside Temperature [%.1f °C]"	<temperature> (Weather_Chart) { http="<[http://weather.yahooapis.com/forecastrss?w=22721166&u=c:60000:XSLT(yahoo_weather_temperature.xsl)]" }
+Number Weather_Humidity 		"Outside Humidity [%.1f %%]"	<temperature> (Weather) { http="<[http://weather.yahooapis.com/forecastrss?w=22721166&u=c:60000:XSLT(yahoo_weather_humidity.xsl)]" }
+Number Weather_Humidex			"Humidex [SCALE(humidex.scale):%s]" 			(Weather)
+Number Weather_Temp_Max 		"Todays Maximum [%.1f °C]"	<temperature> (Weather_Chart)
+Number Weather_Temp_Min 		"Todays Minimum [%.1f °C]"	<temperature> (Weather_Chart)
+Number Weather_Chart_Period		"Chart Period"
+DateTime Weather_LastUpdate		"Last Update [%1$ta %1$tR]"	<clock>
