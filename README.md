@@ -1,2 +1,2 @@
 # openhab
-know working files from my openhab install
+known working files from my openhab install
