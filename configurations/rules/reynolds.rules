@@ -1,0 +1,124 @@
+import org.openhab.core.library.types.*
+import org.openhab.core.persistence.*
+import org.openhab.model.script.actions.* 
+import java.lang.Math 
+import org.openhab.core.library.types.DecimalType
+
+/* Sonos Radio Station */
+	
+rule "Select Sonos Radio Station"
+    when
+        Item SonosKitchen_select received command
+    then
+        switch (receivedCommand) 
+        {            
+            case 0 : sendCommand(SonosKitchen_Radio, "triplej" )      
+            case 1 : sendCommand(SonosKitchen_Radio, "702" )
+        }
+end
+
+
+rule "House Mode"
+	when
+		Item House_Select received command
+	then
+		switch (receivedCommand) 
+		{
+			case 0 : {
+						postUpdate(House_Mode, "Night" )	
+						sendCommand(Lights, OFF)
+//						sendCommand(Light_FF_Hall_Stairs, ON)
+						Thread::sleep(10000)
+						sendCommand(Light_FF_Hall_Stairs, OFF)
+						} 
+			case 1 : {
+						postUpdate(House_Mode, "Home" )	
+						sendCommand(Light_GF_Kitchen_Bench, ON)
+						sendCommand(SonosKitchen_Radio, "triplej" )      
+						}
+			case 2 : {
+						sendCommand(Lights, OFF)
+						postUpdate(House_Mode, "Away" )	
+						}
+			case 3 : postUpdate(House_Mode, "Holiday" )	
+		}
+end
+//			case 1 : {
+//				postUpdate(House_Mode, "Home" )	
+//	            sendCommand(SonosKitchen_Radio, "triplej" )
+//	            sendCommand(Light_GF_Kitchen_Bench, ON)
+//			}
+
+
+rule DoorbellPracticeRule
+when
+	Item practiceSwitch changed to ON
+then
+//	sendCommand("SonosLounge_PlayUri" , "x-rincon-mp3radio://10.0.26.20/sounds/doorbell.mp3")
+//	sendCommand(SonosLounge_Save, ON)
+	Thread::sleep(1000)
+	sendCommand(LoungeLine, "Lounge")
+	playSound("doorbell.mp3")
+	Thread::sleep(7000)
+	sendCommand(practiceSwitch, OFF)
+end
+
+
+rule "Evening Kitchen light ON"
+when
+	Time cron "0 30 19 * * ?"
+then
+	sendCommand(Light_GF_Kitchen_Bench, ON)
+end
+
+rule "Evening lights ON"
+when
+	Time cron "0 00 20 * * ?"
+then
+	sendCommand(Light_GF_Living_Lamp, ON)
+	sendCommand(Light_Outdoor_Backyard, ON)
+	sendCommand(Light_Outdoor_Frontyard, ON)
+	sendCommand(Light_FF_Hall_Stairs, ON)
+//	sendCommand("SonosKitchen_PlayUri" , "/x-rincon-mp3radio://10.0.26.20/sounds/chime.mp3")
+end
+
+rule "Evening lights OFF"
+when
+	Time cron "0 30 22 * * ?"
+then
+	sendCommand(Light_GF_Living_Lamp, OFF)
+	sendCommand(Light_Outdoor_Backyard, OFF)
+	sendCommand(Light_Outdoor_Frontyard, OFF)
+	sendCommand(Light_FF_Hall_Stairs, OFF)
+	sendCommand(Light_GF_Kitchen_Bench, OFF)
+//	sendCommand("SonosKitchen_PlayUri" , "x-rincon-mp3radio://10.0.26.20/sounds/chime.mp3")
+end
+
+/*
+rule "TEST SONOS SOUND"
+when
+	Time cron "0 11 13 * * ?"
+then
+	sendCommand(SonosKitchens_Save, "ON")
+	sendCommand("SonosKitchen_PlayUri" , "x-rincon-mp3radio://10.0.26.20/sounds/chime.mp3")
+	sendCommand(SonosKitchen_Restore, "ON")
+	sendCommand(Light_GF_Kitchen_Bench, ON)
+end
+ */
+	
+/**
+
+	Time cron "0 30 22 * * ?"
+
+rule "Front Garden lights ON"
+when
+	Time cron "0 10 20 * * ?"
+then
+	sendCommand(plug1, ON)
+
+rule "Front Garden lights OFF"
+when
+	Time cron "0 00 23 * * ?"
+then
+	sendCommand(plug1, OFF)
+*/
